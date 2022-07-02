@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Articles {
+  id      Int       @id @default(autoincrement())
+  userId  Int?
+  titre   String    @db.VarChar(255)
+  date    DateTime? @db.Date
+  contenu String?   @db.VarChar(10000)
+  Users   Users?    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "articles_ibfk_1")
+
+  @@index([userId], map: "userId")
+}
+
+model DateDeSortie {
+  id        Int       @id @default(autoincrement())
+  jeuId     Int?
+  supportId Int?
+  date      DateTime? @db.Date
+  Jeu       Jeu?      @relation(fields: [jeuId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "datedesortie_ibfk_1")
+  Support   Support?  @relation(fields: [supportId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "datedesortie_ibfk_2")
+
+  @@index([jeuId], map: "jeuId")
+  @@index([supportId], map: "supportId")
+}
+
+model Jeu {
+  id               Int                @id @default(autoincrement())
+  nom              String             @db.VarChar(50)
+  description      String?            @db.VarChar(500)
+  DateDeSortie     DateDeSortie[]
+  PersoAppartientA PersoAppartientA[]
+}
+
+model ParticipeA {
+  id        Int       @id @default(autoincrement())
+  userId    Int?
+  tournoiId Int?
+  Tournois  Tournois? @relation(fields: [tournoiId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "participea_ibfk_2")
+  Users     Users?    @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "participea_ibfk_1")
+
+  @@index([tournoiId], map: "tournoiId")
+  @@index([userId], map: "userId")
+}
+
+model PersoAppartientA {
+  id          Int          @id @default(autoincrement())
+  jeuId       Int?
+  persoId     Int?
+  Jeu         Jeu?         @relation(fields: [jeuId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "persoappartienta_ibfk_2")
+  Personnages Personnages? @relation(fields: [persoId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "persoappartienta_ibfk_1")
+
+  @@index([jeuId], map: "jeuId")
+  @@index([persoId], map: "persoId")
+}
+
+model PersoJouer {
+  id          Int          @id @default(autoincrement())
+  usersId     Int?
+  persoId     Int?
+  nbVictoire  Int?         @default(0)
+  nbDefaite   Int?         @default(0)
+  nbMatchNul  Int?         @default(0)
+  Personnages Personnages? @relation(fields: [persoId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "persojouer_ibfk_2")
+  Users       Users?       @relation(fields: [usersId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "persojouer_ibfk_1")
+
+  @@index([persoId], map: "persoId")
+  @@index([usersId], map: "usersId")
+}
+
+model Personnages {
+  id               Int                @id @default(autoincrement())
+  nom              String?            @db.VarChar(50)
+  PersoAppartientA PersoAppartientA[]
+  PersoJouer       PersoJouer[]
+}
+
+model Support {
+  id           Int            @id @default(autoincrement())
+  nom          String?        @db.VarChar(20)
+  DateDeSortie DateDeSortie[]
+}
+
+model Tournois {
+  id             Int             @id @default(autoincrement())
+  nom            String?         @db.VarChar(50)
+  ownerId        Int?
+  dateDebut      DateTime?       @db.DateTime(0)
+  dateFin        DateTime?       @db.DateTime(0)
+  nbParticipants Int?
+  Tournois_Owner Tournois_Owner? @relation(fields: [ownerId], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "tournois_ibfk_1")
+  ParticipeA     ParticipeA[]
+
+  @@index([ownerId], map: "ownerId")
+}
+
+model Tournois_Owner {
+  id       Int        @id @default(autoincrement())
+  nom      String?    @db.VarChar(50)
+  numero   String?    @db.VarChar(15)
+  mail     String?    @db.VarChar(50)
+  Tournois Tournois[]
+}
+
+model Users {
+  id              Int          @id @default(autoincrement())
+  prenom          String       @db.VarChar(30)
+  nom             String       @db.VarChar(30)
+  email           String       @db.VarChar(30)
+  pseudo          String       @unique(map: "pseudo") @db.VarChar(50)
+  dateDeNaissance DateTime?    @db.Date
+  password        String?      @db.VarChar(255)
+  Articles        Articles[]
+  ParticipeA      ParticipeA[]
+  PersoJouer      PersoJouer[]
+}

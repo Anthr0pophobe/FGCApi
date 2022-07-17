@@ -1,3 +1,4 @@
+const { Prisma } = require('@prisma/client');
 const { prisma } = require('../../services/prismaClient');
 
 const returnSuccess = (res, data, code) => {
@@ -15,14 +16,12 @@ const index = async (req, res) => {
 	try {
 		const users = await prisma.users.findMany();
 		console.log(users);
-		return returnSuccess(true, users, 200);
-		// res.json({
-		// 	succes: 'true',
-		// 	data: users,
-		// 	code: 200,
-		// });
+		res.json({
+			succes: 'true',
+			data: users,
+			code: 200,
+		});
 	} catch (error) {
-		console.log(error);
 		return res.json({ succes: 'false', data: { error } });
 	}
 };

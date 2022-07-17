@@ -40,6 +40,7 @@ const show = async (req, res) => {
 			select: {
 				id: true,
 				pseudo: true,
+				prenom: true,
 			},
 		});
 		return res.json({

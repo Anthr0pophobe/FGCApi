@@ -1,4 +1,3 @@
-const { Prisma } = require('@prisma/client');
 const { prisma } = require('../../services/prismaClient');
 
 const returnSuccess = (res, data, code) => {
@@ -15,7 +14,6 @@ const returnSuccess = (res, data, code) => {
 const index = async (req, res) => {
 	try {
 		const users = await prisma.users.findMany();
-		console.log(users);
 		res.json({
 			succes: 'true',
 			data: users,
@@ -48,7 +46,11 @@ const show = async (req, res) => {
 		});
 	} catch (error) {
 		console.log(error);
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({
+			succes: 'false',
+			message: 'Utilisateur not found',
+			code: 404,
+		});
 	}
 };
 
@@ -70,6 +72,7 @@ const create = async (req, res) => {
 		return res.json({ succes: 'false', data: { error } });
 	}
 };
+
 const update = async (req, res) => {
 	const {
 		params: { userId },

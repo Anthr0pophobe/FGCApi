@@ -1,7 +1,7 @@
 const { response } = require('express');
 const { prisma } = require('../../services/prismaClient');
 
-const index = async (res, req) => {
+const index = async (req, res) => {
 	try {
 		const articles = await prisma.articles.findMany();
 		if (!articles.length) {
@@ -54,8 +54,55 @@ const show = async (req, res) => {
 		});
 	}
 };
+const create = async (req, res) => {
+	try {
+		const { body } = req;
+		const createArticle = await prisma.articles.create({
+			data: {
+				...body,
+			},
+		});
+		return res.json({
+			success: true,
+			data: createArticle,
+			code: 200,
+		});
+	} catch (error) {
+		return res.json({
+			succes: false,
+			error: { error },
+		});
+	}
+};
+
+const update = async (req, res) => {
+	const {
+		params: { articleId },
+	} = req;
+	const { body } = req;
+	try {
+		const updateArticle = await prisma.articles.update({
+			where: {
+				id: parseInt(articleId, 10),
+			},
+			data: {
+				...body,
+			},
+		});
+		return res.json({
+			succes: true,
+			data: updateArticle,
+			code: 200,
+		});
+	} catch (error) {
+		console.log(error);
+		return res.json({ succes: 'false', data: { error } });
+	}
+};
 
 module.exports = {
 	index,
 	show,
+	create,
+	update,
 };

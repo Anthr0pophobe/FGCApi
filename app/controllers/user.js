@@ -22,10 +22,13 @@ const show = async (req, res) => {
 			where: {
 				id: parseInt(userId, 10),
 			},
-			select: {
-				id: true,
-				pseudo: true,
-				prenom: true,
+
+			include: {
+				PersoJouer: {
+					include: {
+						Personnages: true,
+					},
+				},
 			},
 		});
 		return res.json({
@@ -34,6 +37,7 @@ const show = async (req, res) => {
 			code: 200,
 		});
 	} catch (error) {
+		console.log(error);
 		return res.json({
 			succes: 'false',
 			message: 'Utilisateur not found',

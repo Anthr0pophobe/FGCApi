@@ -1,96 +1,101 @@
+const { response } = require('express');
 const { prisma } = require('../../services/prismaClient');
-
-const returnSuccess = (res, data, code) => {
-	let response = { succes: true };
-	if (data && typeof data === 'object') {
-		response = Object.assign(data);
-	} else {
-		response.data = {};
-	}
-	if (typeof code !== 'undefined') res.statusCode = code;
-	return res.json({ succes: true, data: response });
-};
 
 const index = async (req, res) => {
 	try {
-		const users = await prisma.users.findMany();
+		const articles = await prisma.articles.findMany();
+		if (!articles.length) {
+			res.json({
+				succes: true,
+				message: 'Aucun article trouvé',
+				code: 200,
+			});
+		}
 		res.json({
 			succes: 'true',
-			data: users,
+			data: { articles },
 			code: 200,
 		});
 	} catch (error) {
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({
+			success: 'false',
+			error: error,
+			code: 400,
+		});
 	}
 };
 
 const show = async (req, res) => {
 	const {
-		params: { userId },
+		params: { articleId },
 	} = req;
 	try {
-		const user = await prisma.users.findUnique({
+		const article = await prisma.articles.findUnique({
 			where: {
-				id: parseInt(userId, 10),
+				id: parseInt(articleId, 10),
 			},
 			select: {
-				id: true,
-				pseudo: true,
-				prenom: true,
+				titre: true,
+				date: true,
+				contenu: true,
 			},
 		});
 		return res.json({
 			succes: 'true',
-			data: user,
+			data: article,
 			code: 200,
 		});
 	} catch (error) {
+		console.log(error);
 		return res.json({
 			succes: 'false',
-			message: 'Utilisateur not found',
+			message: 'Artcile not found',
 			code: 404,
 		});
 	}
 };
-
 const create = async (req, res) => {
 	try {
 		const { body } = req;
-		const createUser = await prisma.users.create({
+		const createArticle = await prisma.articles.create({
 			data: {
 				...body,
 			},
 		});
 		return res.json({
-			succes: 'true',
-			data: createUser,
+			success: true,
+			data: createArticle,
 			code: 200,
 		});
 	} catch (error) {
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({
+			succes: false,
+			error: { error },
+		});
 	}
 };
 
 const update = async (req, res) => {
 	const {
-		params: { userId },
+		params: { articleId },
 	} = req;
 	const { body } = req;
 	try {
-		const updateUser = await prisma.users.update({
+		const updateArticle = await prisma.articles.update({
 			where: {
-				id: parseInt(userId, 10),
+				id: parseInt(articleId, 10),
 			},
 			data: {
 				...body,
 			},
 		});
 		return res.json({
-			succes: 'true',
-			data: updateUser,
+			succes: true,
+			data: updateArticle,
 			code: 200,
 		});
 	} catch (error) {
+		console.log(error);
 		return res.json({ succes: 'false', data: { error } });
 	}
 };

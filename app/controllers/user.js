@@ -45,7 +45,6 @@ const show = async (req, res) => {
 			code: 200,
 		});
 	} catch (error) {
-		console.log(error);
 		return res.json({
 			succes: 'false',
 			message: 'Utilisateur not found',
@@ -68,7 +67,6 @@ const create = async (req, res) => {
 			code: 200,
 		});
 	} catch (error) {
-		console.log(error);
 		return res.json({ succes: 'false', data: { error } });
 	}
 };
@@ -93,7 +91,6 @@ const update = async (req, res) => {
 			code: 200,
 		});
 	} catch (error) {
-		console.log(error);
 		return res.json({ succes: 'false', data: { error } });
 	}
 };

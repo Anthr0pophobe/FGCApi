@@ -1,16 +1,5 @@
 const { prisma } = require('../../services/prismaClient');
 
-const returnSuccess = (res, data, code) => {
-	let response = { succes: true };
-	if (data && typeof data === 'object') {
-		response = Object.assign(data);
-	} else {
-		response.data = {};
-	}
-	if (typeof code !== 'undefined') res.statusCode = code;
-	return res.json({ succes: true, data: response });
-};
-
 const index = async (req, res) => {
 	try {
 		const users = await prisma.users.findMany();

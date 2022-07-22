@@ -4,12 +4,12 @@ const index = async (req, res) => {
 	try {
 		const users = await prisma.users.findMany();
 		res.json({
-			succes: 'true',
+			succes: true,
 			data: users,
 			code: 200,
 		});
 	} catch (error) {
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({ succes: false, data: { error } });
 	}
 };
 
@@ -29,16 +29,21 @@ const show = async (req, res) => {
 						Personnages: true,
 					},
 				},
+				ParticipeA: {
+					include: {
+						Tournois: true,
+					},
+				},
 			},
 		});
 		return res.json({
-			succes: 'true',
+			succes: true,
 			data: user,
 			code: 200,
 		});
 	} catch (error) {
 		return res.json({
-			succes: 'false',
+			succes: false,
 			message: 'Utilisateur not found',
 			code: 404,
 		});
@@ -54,12 +59,12 @@ const create = async (req, res) => {
 			},
 		});
 		return res.json({
-			succes: 'true',
+			succes: true,
 			data: createUser,
 			code: 200,
 		});
 	} catch (error) {
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({ succes: false, data: { error } });
 	}
 };
 
@@ -78,12 +83,46 @@ const update = async (req, res) => {
 			},
 		});
 		return res.json({
-			succes: 'true',
+			succes: true,
 			data: updateUser,
 			code: 200,
 		});
 	} catch (error) {
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({ succes: false, data: { error } });
+	}
+};
+
+const register = async (req, res) => {
+	//TODO : regex test if is only numbers
+	const {
+		params: { userId, tournoiId },
+	} = req;
+	try {
+		const register = await prisma.ParticipeA.create({
+			data: {
+				userId: parseInt(userId, 10),
+				tournoiId: parseInt(tournoiId, 10),
+			},
+		});
+		return res.json({
+			succes: true,
+			data: register,
+			code: 200,
+		});
+	} catch (error) {
+		console.log(error);
+		if (error.code === 'P2003') {
+			return res.json({
+				succes: false,
+				message: `Le champs ${error.meta.field_name} est incorrecte.`,
+				code: 404,
+			});
+		}
+		return res.json({
+			succes: false,
+			data: { error },
+			code: 400,
+		});
 	}
 };
 
@@ -92,4 +131,5 @@ module.exports = {
 	show,
 	create,
 	update,
+	register,
 };

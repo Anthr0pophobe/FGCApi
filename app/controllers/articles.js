@@ -1,4 +1,3 @@
-const { response } = require('express');
 const { prisma } = require('../../services/prismaClient');
 
 const index = async (req, res) => {
@@ -8,17 +7,17 @@ const index = async (req, res) => {
 			res.json({
 				succes: true,
 				message: 'Aucun article trouvé',
-				code: 200,
+				code: 404,
 			});
 		}
 		res.json({
-			succes: 'true',
+			succes: true,
 			data: { articles },
 			code: 200,
 		});
 	} catch (error) {
 		return res.json({
-			success: 'false',
+			success: false,
 			error: error,
 			code: 400,
 		});
@@ -41,13 +40,13 @@ const show = async (req, res) => {
 			},
 		});
 		return res.json({
-			succes: 'true',
+			succes: true,
 			data: article,
 			code: 200,
 		});
 	} catch (error) {
 		return res.json({
-			succes: 'false',
+			succes: false,
 			message: 'Artcile not found',
 			code: 404,
 		});
@@ -94,7 +93,7 @@ const update = async (req, res) => {
 			code: 200,
 		});
 	} catch (error) {
-		return res.json({ succes: 'false', data: { error } });
+		return res.json({ succes: false, data: { error } });
 	}
 };
 

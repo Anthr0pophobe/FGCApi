@@ -1,4 +1,5 @@
 const { prisma } = require('../../services/prismaClient');
+const { update } = require('./user');
 
 const index = async (req, res) => {
 	try {
@@ -52,7 +53,59 @@ const show = async (req, res) => {
 	}
 };
 
+const create = async (req, res) => {
+	const { body } = req;
+	try {
+		const createTournoi = await prisma.tournois.create({
+			data: {
+				...body,
+			},
+		});
+		return res.json({
+			success: true,
+			data: createTournoi,
+			code: 200,
+		});
+	} catch (error) {
+		return res.json({
+			success: false,
+			data: { error },
+			code: 400,
+		});
+	}
+};
+
+const update = async (req, res) => {
+	const {
+		params: { tournoiId },
+	} = req;
+	const { body } = req;
+	try {
+		const updateTournoi = await prisma.tournois.update({
+			where: {
+				id: parseInt(tournoiId, 10),
+			},
+			data: {
+				...body,
+			},
+		});
+		return res.json({
+			success: true,
+			data: updateTournoi,
+			code: 200,
+		});
+	} catch (error) {
+		return res.json({
+			success: true,
+			error: { error },
+			code: 400,
+		});
+	}
+};
+
 module.exports = {
 	index,
 	show,
+	create,
+	update,
 };

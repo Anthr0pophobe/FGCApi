@@ -99,11 +99,53 @@ const register = async (req, res) => {
 	} = req;
 	try {
 		const register = await prisma.ParticipeA.create({
+			//TODO : limit to 1 user per tournament
 			data: {
 				userId: parseInt(userId, 10),
 				tournoiId: parseInt(tournoiId, 10),
 			},
 		});
+		// const isRegistered = await prisma.ParticipeA.findFirst({
+		// 	where: {
+		// 		AND: [
+		// 			{
+		// 				filters: {
+		// 					some: {
+		// 						userId: parseInt(userId, 10),
+		// 						tournoiId: parseInt(tournoiId, 10),
+		// 					},
+		// 				},
+		// 			},
+		// 		],
+		// 	},
+		// });
+		// console.log(isRegistered);
+		// const register = await prisma.ParticipeA.upsert({
+		// 	where: {
+		// 		AND: [
+		// 			{
+		// 				Users: {
+		// 					userId: parseInt(userId, 10),
+		// 				},
+		// 				Tournois: {
+		// 					tournoiId: parseInt(tournoiId, 10),
+		// 				},
+		// 			},
+		// 		],
+		// 	},
+		// 	create: {
+		// 		userId: parseInt(userId, 10),
+		// 		tournoiId: parseInt(tournoiId, 10),
+		// 	},
+		// 	update: {
+		// 		userId: parseInt(userId, 10),
+		// 		tournoiId: parseInt(tournoiId, 10),
+		// 	},
+		// 	include: {
+		// 		Users: true,
+		// 		Tournois: true,
+		// 	},
+		// });
 		return res.json({
 			succes: true,
 			data: register,

@@ -7,7 +7,7 @@ router.get('/', UserController.index);
 router.get('/:userId', UserController.show);
 router.post('/create', UserController.create);
 router.put('/:userId/update', UserController.update);
-router.post(
+router.put(
 	'/:userId/register/:tournoiId',
 	UserController.register
 );

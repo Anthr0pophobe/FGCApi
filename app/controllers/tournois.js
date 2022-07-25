@@ -1,5 +1,4 @@
 const { prisma } = require('../../services/prismaClient');
-const { update } = require('./user');
 
 const index = async (req, res) => {
 	try {
